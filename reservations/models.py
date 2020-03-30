@@ -17,9 +17,7 @@ class Reservation(core_models.TimeStampedModel):
         (STATUS_CANCELED, "Canceled"),
     )
 
-    status = models.CharField(
-        max_length=12, choices=STATUS_CHOICES, default=STATUS_PENDING
-    )
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES,)
     check_in = models.DateField()
     check_out = models.DateField()
     guest = models.ForeignKey(
@@ -34,7 +32,7 @@ class Reservation(core_models.TimeStampedModel):
 
     def in_progress(self):
         now = timezone.now().date()
-        if self.check_in < now < self.check_out:
+        if self.check_in <= now <= self.check_out:
             return "on going"
         if now < self.check_in:
             return "not yet"
