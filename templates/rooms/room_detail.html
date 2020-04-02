@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block page_title %}DETAIL{% endblock %}
+{% block content %}
+    <div>
+        <h2>Details...</h2>
+        <h2>(primary key : {{ room.pk }})&nbsp;{{ room.name }}&nbsp;(${{ room.price }})</h2>
+        <h3>{{ room.description }}</h3>
+    </div>
+    <div><h2>
+        by :
+        {% if room.host.super_host %}
+            (Super Host)
+        {% endif %}
+        {{ room.host.username }}</h2>
+    </div>
+    <div>
+        <h2>Amenity</h2>
+        {% for amenity in room.amenities.all %}
+            <h4>{{ amenity }}</h4>
+        {% endfor %}
+    </div>
+    <div>
+        <h2>Facility</h2>
+        {% for facility in room.facilities.all %}
+            <h4>{{ facility }}</h4>
+        {% endfor %}
+    </div>
+    <div>
+        <h2>House Rule</h2>
+        {% for rule in room.house_rules.all %}
+            <h4>{{ rule }}</h4>
+        {% endfor %}
+    </div>
+
+{% endblock %}
