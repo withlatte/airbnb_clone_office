@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django_countries import countries
 from . import models as room_models
+from . import forms as search_forms
 
 
 class HomeView(ListView):
@@ -33,15 +34,9 @@ class RoomDetailView(DetailView):
 
 
 def search(request):
-    city = request.GET.get("city", "Anywhere")
-    city = str.capitalize(city)
-    room_types = room_models.RoomType.objects.all()
+    form = search_forms.SearchForm
 
-    return render(
-        request,
-        "rooms/search.html",
-        {"city": city, "countries": countries, "room_types": room_types},
-    )
+    return render(request, "rooms/search.html", {"form": form},)
 
 
 """
