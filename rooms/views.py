@@ -3,7 +3,8 @@ from django.urls import reverse
 # from django.http import Http404
 from django.utils import timezone
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
+from django.core.paginator import Paginator
 from django_countries import countries
 from . import models as room_models
 from . import forms as search_forms
@@ -33,10 +34,79 @@ class RoomDetailView(DetailView):
     model = room_models.Room
 
 
-def search(request):
-    form = search_forms.SearchForm
+class SearchView(View):
+    """ Search View Definition """
 
-    return render(request, "rooms/search.html", {"form": form},)
+    def get(self, request):
+
+        country = request.GET.get("country")
+
+        if country:
+            form = search_forms.SearchForm(request.GET)
+
+            if form.is_valid():
+                city = form.cleaned_data.get("city")
+                country = form.cleaned_data.get("country")
+                room_type = form.cleaned_data.get("room_type")
+                price = form.cleaned_data.get("price")
+                guests = form.cleaned_data.get("guests")
+                beds = form.cleaned_data.get("beds")
+                bedrooms = form.cleaned_data.get("bedrooms")
+                baths = form.cleaned_data.get("baths")
+                instant_book = form.cleaned_data.get("instant_book")
+                super_host = form.cleaned_data.get("super_host")
+                amenities = form.cleaned_data.get("amenities")
+                facilities = form.cleaned_data.get("facilities")
+
+                filter_args = {}
+
+                if city != "Anywhere":
+                    filter_args["city__startswith"] = city
+
+                filter_args["country"] = country
+
+                if room_type is not None:
+                    filter_args["room_type__pk"] = room_type
+
+                if price is not None:
+                    filter_args["price__lte"] = price
+
+                if guests is not None:
+                    filter_args["guests__gte"] = guests
+
+                if beds is not None:
+                    filter_args["beds__lte"] = beds
+
+                if bedrooms is not None:
+                    filter_args["bedrooms__lte"] = bedrooms
+
+                if baths is not None:
+                    filter_args["baths__lte"] = baths
+
+                if instant_book:
+                    filter_args["instant_book"] = True
+
+                if super_host:
+                    filter_args["host__super_host"] = True
+
+                for amenity in amenities:
+                    filter_args["amenities"] = amenity
+
+                for facility in facilities:
+                    filter_args["facilities"] = facility
+
+                qs = room_models.Room.objects.filter(**filter_args).order_by("-created")
+                paginator = Paginator(qs, 10, orphans=5)
+                page = request.GET.get("page", 1)
+                rooms = paginator.get_page(page)
+
+                return render(
+                    request, "rooms/search.html", {"form": form, "rooms": rooms},
+                )
+        else:
+            form = search_forms.SearchForm()
+
+        return render(request, "rooms/search.html", {"form": form},)
 
 
 """
