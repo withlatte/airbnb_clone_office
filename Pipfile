@@ -7,10 +7,9 @@ verify_ssl = true
 
 [packages]
 django = "*"
-pylint = "*"
 pillow = "*"
-django-countries = "*"
 django-seed = "*"
+django-dotenv = "*"
 
 [requires]
 python_version = "3.7"
