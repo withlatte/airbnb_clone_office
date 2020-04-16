@@ -40,4 +40,6 @@ class CustomUserAdmin(UserAdmin):
         "super_host",
         "is_staff",
         "is_superuser",
+        "email_confirmed",
+        "email_secret",
     )

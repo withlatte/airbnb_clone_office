@@ -60,5 +60,6 @@ class User(AbstractUser):
                 [self.email],
                 html_message=html_message,
             )
+            self.save()
 
         return
