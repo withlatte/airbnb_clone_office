@@ -7,6 +7,7 @@
     {% block search-bar %}
         {% comment %}  Hide search-bar  {% endcomment %}
     {% endblock %}
+    {% include "partials/social_login.html" %}
     <form method="POST" action="{% url "users:login" %}">
         {% csrf_token %}
         {{ form.as_p }}

@@ -1,11 +1,7 @@
-from django.urls import reverse
-
-# from django.http import Http404
 from django.utils import timezone
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, View
 from django.core.paginator import Paginator
-from django_countries import countries
 from . import models as room_models
 from . import forms as search_forms
 
