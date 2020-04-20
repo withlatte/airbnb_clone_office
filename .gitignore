@@ -131,3 +131,5 @@ dmypy.json
 # My My My
 uploads/
 .idea/dataSources/
+node_modules/
+package-lock.json
