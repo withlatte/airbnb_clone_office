@@ -16,6 +16,14 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="@types/gulp" level="application" />
+    <orderEntry type="library" name="@types/gulp-autoprefixer" level="application" />
+    <orderEntry type="library" name="@types/gulp-babel" level="application" />
+    <orderEntry type="library" name="@types/gulp-csso" level="application" />
+    <orderEntry type="library" name="@types/node-sass" level="application" />
+    <orderEntry type="library" name="@types/gulp-sass" level="application" />
+    <orderEntry type="library" name="@types/gulp-postcss" level="application" />
+    <orderEntry type="library" name="@types/npm" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

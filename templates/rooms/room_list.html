@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block page_title %}HOME{% endblock %}
+{% block content %}
+
+    <div class="container mx-auto">
+        <div class="bg-gray-800 h-50vh -mx-40 mt-32 mb-24 rounded-xl bg-cover bg-center"
+             style="background-image: url(https://images.unsplash.com/photo-1536315238512-4c8cebdaaf93?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format)"></div>
+
+        <div class="flex flex-wrap -mx-40">
+            {% for room in room_obj_list %}
+                {% include "mixins/room_card.html" with room=room %}
+            {% endfor %}
+        </div>
+
+        <h4>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">prev</a>&nbsp;:&nbsp;
+            {% else %}
+                prev&nbsp;:&nbsp;
+            {% endif %}
+
+            {% for page in page_obj.paginator.page_range %}
+                {% if page == page_obj.number %}
+                    <font color="#ff8c00">{{ page }}</font>
+                {% else %}
+                    <a href="?page={{ page }}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                &nbsp;:&nbsp;<a href="?page={{ page_obj.next_page_number }}">next</a>
+            {% else %}
+                &nbsp;: next
+            {% endif %}
+
+        </h4>
+        <h5>Page : {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</h5>
+    </div>
+{% endblock content %}

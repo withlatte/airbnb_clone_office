@@ -1,11 +1,9 @@
-<h5>
-    <a href="{% url "core:home" %}">GO HOME</a> | Pbnb
-    <ul>
-        {% if user.is_authenticated %}
-            <li><h5><a href="{% url "users:logout" %}">LOGOUT</a></h5></li>
-        {% else %}
-            <li><h5><a href="{% url "users:login" %}">LOGIN</a></h5></li>
-            <li><h5><a href="{% url "users:signup" %}">Sign Up</a></h5></li>
-        {% endif %}
-    </ul>
-</h5>
+<ul class="flex items-center text-sm font-medium h-full">
+    {% if user.is_authenticated %}
+        <li class="nav_link"><a href="{% url "users:logout" %}">LOGOUT</a></li>
+    {% else %}
+        <li class="nav_link"><a href="{% url "users:login" %}">LOGIN</a></li>
+        <li class="nav_link"><a href="{% url "users:signup" %}">SIGN UP</a></li>
+    {% endif %}
+</ul>
+

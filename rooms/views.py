@@ -11,9 +11,9 @@ class HomeView(ListView):
 
     model = room_models.Room
     context_object_name = "room_obj_list"
-    paginate_by = 10
+    paginate_by = 12
     paginate_orphans = 5
-    template_name = "rooms/home.html"
+    template_name = "rooms/room_list.html"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,5 +121,5 @@ def all_rooms(request):
     paginator = Paginator(all_my_rooms, 10, orphans=5)
     room = paginator.get_page(page_num)
 
-    return render(request, "rooms/home.html", context={"all_my_rooms": room,},)
+    return render(request, "rooms/room_list.html", context={"all_my_rooms": room,},)
 """
