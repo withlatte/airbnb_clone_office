@@ -1,16 +1,15 @@
 {% extends "base.html" %}
-{% block page_title %}
-    USER LOGIN
-{% endblock %}
+{% block page_title %}USER LOGIN{% endblock page_title %}
+{% block search-bar %}{% comment %}  Hide search-bar  {% endcomment %}{% endblock search-bar %}
+
 {% block content %}
-    <h1>USER LOGIN</h1>
-    {% block search-bar %}
-        {% comment %}  Hide search-bar  {% endcomment %}
-    {% endblock %}
-    {% include "partials/social_login.html" %}
-    <form method="POST" action="{% url "users:login" %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button>Login</button>
-    </form>
-{% endblock %}
+    <div class="lg:w-5/12 md:w-1/2 xl:w-1/4 container mx-auto p-6 my-10 flex flex-col items-center border border-gray-400">
+        {% include "partials/social_login.html" %}
+        {% include "mixins/auth/auth_form.html" with form=form cta="LOGIN" %}
+
+        <div class="mt-3">
+            <span class="mr-2">Don't have an account. <a href="{% url "users:signup" %}"
+                                                         class="text-teal-500 font-semibold">SIGN UP</a></span>
+        </div>
+    </div>
+{% endblock content %}

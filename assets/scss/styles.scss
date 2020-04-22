@@ -17,4 +17,29 @@
   }
 }
 
+.btn {
+  @apply w-full border mb-2 font-light text-center text-lg py-5 rounded;
+}
+
+input {
+  @apply rounded py-5 font-light text-lg w-full text-left border border-gray-600 px-5 mb-2;
+  &:focus {
+    @apply outline-none border-teal-500;
+  }
+}
+
+form {
+  .input {
+    @apply mb-3 w-full;
+    &.has_error {
+      input {
+        @apply bg-red-200 border-gray-600;
+        &:focus {
+          @apply border-gray-600;
+        }
+      }
+    }
+  }
+}
+
 @tailwind utilities;
