@@ -1,10 +1,11 @@
 import os
 import requests
-from django.views.generic import FormView
+from django.views.generic import FormView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.core.files.base import ContentFile
+from django.contrib import messages
 from . import forms, models
 
 
@@ -18,11 +19,13 @@ class LoginView(FormView):
         password = form.cleaned_data.get("password")
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
+            messages.success(self.request, f"Welcome back {user.first_name}")
             login(self.request, user)
         return super().form_valid(form)
 
 
 def log_out(request):
+    messages.info(request, f"Good Bye! {request.user.first_name}")
     logout(request)
     return redirect(reverse("core:home"))
 
@@ -38,6 +41,7 @@ class SignUpView(FormView):
         password = form.cleaned_data.get("password2")
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
+            messages.success(self.request, f"Welcome {user.first_name}")
             login(self.request, user)
         if user.email == "":
             user.email = email
@@ -102,7 +106,9 @@ def github_callback(request):
                     try:
                         user = models.User.objects.get(email=email)
                         if user.login_method != models.User.LOGIN_GITHUB:
-                            raise GithubException()
+                            raise GithubException(
+                                f"Please log in with: {user.login_method}"
+                            )
                     except models.User.DoesNotExist:
                         user = models.User.objects.create(
                             username=email,
@@ -113,13 +119,15 @@ def github_callback(request):
                         )
                         user.set_unusable_password()
                         user.save()
+                    messages.success(request, f"Welcome back {user.first_name}")
                     login(request, user)
                     return redirect(reverse("core:home"))
                 else:
-                    raise GithubException()
+                    raise GithubException("Can't get your profile")
         else:
-            raise GithubException()
-    except GithubException:
+            raise GithubException("Can't get the authorization code")
+    except GithubException as e:
+        messages.error(request, e)
         return redirect(reverse("users:login"))
 
 
@@ -149,7 +157,7 @@ def kakao_callback(request):
             token_json = token_request.json()
             error = token_json.get("error", None)
             if error is not None:
-                raise KakaoException()
+                raise KakaoException("Can't get the access token")
             else:
                 access_token = token_json.get("access_token")
                 profile_request = requests.get(
@@ -168,7 +176,9 @@ def kakao_callback(request):
                     try:
                         user = models.User.objects.get(email=email)
                         if user.login_method != models.User.LOGIN_KAKAO:
-                            raise KakaoException()
+                            raise KakaoException(
+                                f"Please log in with: {user.login_method}"
+                            )
                     except models.User.DoesNotExist:
                         user = models.User.objects.create(
                             username=email,
@@ -185,11 +195,26 @@ def kakao_callback(request):
                             user.avatar.save(
                                 f"{email}-avatar", ContentFile(photo_request.content)
                             )
+                    messages.success(request, f"Welcome back {user.first_name}")
                     login(request, user)
                     return redirect(reverse("core:home"))
                 else:
-                    raise KakaoException()
+                    raise KakaoException("Can't get your profile")
         else:
-            raise KakaoException()
-    except KakaoException:
+            raise KakaoException("Can't get the authorization code")
+    except KakaoException as e:
+        messages.error(request, e)
         return redirect(reverse("users:login"))
+
+
+class UserProfileView(DetailView):
+    """
+    User Profile View Definition
+    Nomadcoder Lesson #21.3 참조
+    페이지 이동에 따라 유저가 변경되는 구조에 따라
+    context_obj_name 을 설정하여 어느 페이지에서든
+    로그인한 유저에 대한 프로파일 페이지로 이동하게 한다.
+    """
+
+    model = models.User
+    context_object_name = "user_obj"

@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.mail import send_mail
 from django.db import models
 from django.conf import settings
+from django.shortcuts import reverse
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 
@@ -57,6 +58,13 @@ class User(AbstractUser):
     login_method = models.CharField(
         choices=LOGIN_CHOICES, max_length=8, default=LOGIN_EMAIL
     )
+
+    def get_absolute_url(self):
+        """
+        어드민 패널에서 View on site 버튼을 활성화하기 위해 오버라이드 한다
+        또한, 템플릿에서 users:profile 대신 {{user.get_absolute_url}} 사용가능해짐
+        """
+        return reverse("users:profile", kwargs={"pk": self.pk})
 
     def verify_email(self):
         """ Send verification email to user's email """
