@@ -218,3 +218,14 @@ class UserProfileView(DetailView):
 
     model = models.User
     context_object_name = "user_obj"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        super().get_context_data(**kwargs) 이 구문은 위 context_object_name 을
+        불러온다(기본값). 추가 인자를 불러오고 싶을 때, get_context_data 를
+        오버라이드 하여 추가할 수 있다. 아래의 Hello 문 처럼 배열에 추가한다.
+        """
+        context = super().get_context_data(**kwargs)
+        context["hello"] = "Hello!"
+        # html 파일에서 {{hello}} 로 불러 사용한다.
+        return context
