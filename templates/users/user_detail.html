@@ -2,26 +2,30 @@
 {% block page_title %}{{ user_obj.first_name }}'s PROFILE{% endblock page_title %}
 
 {% block content %}
-    <div class="lg:w-5/12 md:w-1/2 xl:w-1/4 container mx-auto p-6 my-10 flex flex-col items-center border border-gray-400">
+    <div class="min-h-75vh">
+        <div class="lg:w-5/12 md:w-1/2 xl:w-1/4 container mx-auto p-6 my-10 flex flex-col items-center border border-gray-400">
 
-        {% include "mixins/user_avatar.html" with user=user_obj %}
-        <div class="flex items-center">
-            <span class="text-3xl mt-1">{{ user_obj.first_name }}</span>
-            {% if user_obj.super_host %}
-                <i class="fas fa-check-circle text-teal-400 ml-2" title="SUPER HOST"></i> {% endif %}
+            {% include "mixins/user_avatar.html" with user=user_obj %}
+            <div class="flex items-center">
+                <span class="text-3xl mt-1">{{ user_obj.first_name }}</span>
+                {% if user_obj.super_host %}
+                    <i class="fas fa-check-circle text-teal-400 ml-2" title="SUPER HOST"></i> {% endif %}
+            </div>
+            <span class="mt-1 mb-6 text-xl">{{ user_obj.bio }}</span>
+            {% if user == user_obj %}
+                <a href="#" class="btn-link">EDIT PROFILE</a>
+            {% endif %}
+
         </div>
-        <span class="mt-1 mb-6 text-xl">{{ user_obj.bio }}</span>
-        {% if user == user_obj %}
-            <a href="#" class="btn-link">EDIT PROFILE</a>
+        {% if user_obj.rooms.count > 0 %}
+            <h3 class="mb-12 text-2xl text-center">{{ user_obj.first_name }}'s Rooms</h3>
+            <div class="container mx-auto pb-10 ">
+                <div class="flex flex-wrap -mx-40 mb-10">
+                    {% for room in user_obj.rooms.all %}
+                        {% include 'mixins/room_card.html' with room=room %}
+                    {% endfor %}
+                </div>
+            </div>
         {% endif %}
-
-    </div>
-    <div class="container flex flex-col items-center mx-auto">
-        <h3>{{ user_obj.first_name }}'s rooms</h3>
-        <div class="flex flex-wrap -mx-40 mb-10">
-            {% for room in user_obj.rooms.all %}
-                {% include "mixins/room_card.html" with room=room %}
-            {% endfor %}
-        </div>
     </div>
 {% endblock content %}
