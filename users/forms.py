@@ -44,3 +44,30 @@ class SignUpForm(UserCreationForm):
     password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"})
     )
+
+
+class UpdateProfileForm(forms.ModelForm):
+    """ Update Profile Form Definition """
+
+    avatar = forms.ImageField(
+        required=False, widget=forms.FileInput, label="Upload Profile Image"
+    )
+
+    class Meta:
+        model = models.User
+        fields = [
+            "first_name",
+            "last_name",
+            "avatar",
+            "gender",
+            "bio",
+            "birth_date",
+            "language",
+            "currency",
+        ]
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "bio": forms.Textarea(attrs={"placeholder": "Biography"}),
+            "birth_date": forms.DateInput(attrs={"placeholder": "yyyy-mm-dd"}),
+        }

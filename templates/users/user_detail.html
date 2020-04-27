@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block page_title %}{{ user_obj.first_name }}'s PROFILE{% endblock page_title %}
+{% block page_title %}{{ user_obj.first_name.capitalize }}'s PROFILE{% endblock page_title %}
 
 {% block content %}
     <div class="min-h-75vh">
@@ -13,12 +13,12 @@
             </div>
             <span class="mt-1 mb-6 text-xl">{{ user_obj.bio }}</span>
             {% if user == user_obj %}
-                <a href="#" class="btn-link">EDIT PROFILE</a>
+                <a href="{% url "users:update-profile" %}" class="btn-link">EDIT PROFILE</a>
             {% endif %}
 
         </div>
         {% if user_obj.rooms.count > 0 %}
-            <h3 class="mb-12 text-2xl text-center">{{ user_obj.first_name }}'s Rooms</h3>
+            <h3 class="mb-12 text-2xl text-center">{{ user_obj.first_name.capitalize }}'s Rooms</h3>
             <div class="container mx-auto pb-10 ">
                 <div class="flex flex-wrap -mx-40 mb-10">
                     {% for room in user_obj.rooms.all %}

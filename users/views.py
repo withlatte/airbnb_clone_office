@@ -1,9 +1,10 @@
 import os
 import requests
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, reverse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import PasswordChangeView
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from . import forms, models
@@ -229,3 +230,38 @@ class UserProfileView(DetailView):
         context["hello"] = "Hello!"
         # html 파일에서 {{hello}} 로 불러 사용한다.
         return context
+
+
+class UpdateProfileView(UpdateView):
+    """
+    Update Profile View Definition :
+    UpdateView 클래스뷰 사용 시, urls.py 에 path 입력 시, <int:pk> 와 같은
+    형식으로 url 을 부여하면 자동으로 모든 update 프로세스를 만들어 준다.
+    그러나, 지금처럼 update-profile 형식의 path 설정 시, get_object() 를
+    오버라이드 하여, 내가 원하는 스타일로 커스터마이징 할 수 있다.
+    """
+
+    model = models.User
+    form_class = forms.UpdateProfileForm
+    template_name = "users/update-profile.html"
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    """
+    form_valid function 을 사용하여 클래스뷰의 객체에 접근하여
+    각 인스턴스를 핸들링 할 수 있다. 아래는 이메일 변경 시, 자동으로
+    유저네임까지 같은 이메일로 변경 해 주는 프로세스이다.
+    
+    def form_valid(self, form):
+        email = form.cleaned_data.get("email")
+        self.object.username = email
+        self.object.save()
+        return super(UpdateProfileView, self).form_valid(form)
+    """
+
+
+class UpdatePasswordView(PasswordChangeView):
+    """ Update Password View Definition """
+
+    template_name = "users/update-password.html"
