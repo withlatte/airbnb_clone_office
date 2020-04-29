@@ -5,15 +5,15 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.base import ContentFile
 from django.contrib import messages
-from . import forms, models
+from . import forms, models, mixins
 
 
-class LoginView(FormView):
+class LoginView(mixins.LoggedOutOnlyView, FormView):
     template_name = "users/login.html"
     form_class = forms.LoginForm
-    success_url = reverse_lazy("core:home")
 
     def form_valid(self, form):
         email = form.cleaned_data.get("email")
@@ -24,14 +24,21 @@ class LoginView(FormView):
             login(self.request, user)
         return super().form_valid(form)
 
+    def get_success_url(self):
+        get_next_url = self.request.GET.get("next")
+        if get_next_url is not None:
+            return get_next_url
+        else:
+            return reverse("core:home")
+
 
 def log_out(request):
     messages.info(request, f"Good Bye! {request.user.first_name}")
     logout(request)
-    return redirect(reverse("core:home"))
+    return redirect(reverse("users:login"))
 
 
-class SignUpView(FormView):
+class SignUpView(mixins.LoggedOutOnlyView, FormView):
     template_name = "users/signup.html"
     form_class = forms.SignUpForm
     success_url = reverse_lazy("core:home")
@@ -214,7 +221,8 @@ class UserProfileView(DetailView):
     Nomadcoder Lesson #21.3 참조
     페이지 이동에 따라 유저가 변경되는 구조에 따라
     context_obj_name 을 설정하여 어느 페이지에서든
-    로그인한 유저에 대한 프로파일 페이지로 이동하게 한다.
+    오른쪽 상단의 PROFILE 버튼을 클릭 시
+    '로그인한 유저'에 대한 프로파일 페이지로 이동하게 한다.
     """
 
     model = models.User
@@ -232,7 +240,7 @@ class UserProfileView(DetailView):
         return context
 
 
-class UpdateProfileView(UpdateView):
+class UpdateProfileView(mixins.LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """
     Update Profile View Definition :
     UpdateView 클래스뷰 사용 시, urls.py 에 path 입력 시, <int:pk> 와 같은
@@ -244,6 +252,7 @@ class UpdateProfileView(UpdateView):
     model = models.User
     form_class = forms.UpdateProfileForm
     template_name = "users/update-profile.html"
+    success_message = "Profile updated successfully"
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -261,7 +270,26 @@ class UpdateProfileView(UpdateView):
     """
 
 
-class UpdatePasswordView(PasswordChangeView):
+class UpdatePasswordView(
+    mixins.EmailLoggedInOnlyView,
+    mixins.LoginRequiredMixin,
+    SuccessMessageMixin,
+    PasswordChangeView,
+):
     """ Update Password View Definition """
 
     template_name = "users/update-password.html"
+    success_message = "Password updated successfully"
+
+    def get_form(self, form_class=None):
+        form = super(UpdatePasswordView, self).get_form(form_class=form_class)
+
+        form.fields["old_password"].widget.attrs = {"placeholder": "Current Password"}
+        form.fields["new_password1"].widget.attrs = {"placeholder": "New Password"}
+        form.fields["new_password2"].widget.attrs = {
+            "placeholder": "New Password Confirmation"
+        }
+        return form
+
+    def get_success_url(self):
+        return reverse("users:profile", kwargs={"pk": self.request.user.pk})
