@@ -1,35 +1,16 @@
 {% extends "base.html" %}
-{% block page_title %}DETAIL{% endblock %}
+{% block page_title %}{{ room.name }}'s DETAIL{% endblock %}
 {% block content %}
-    <div>
-        <h2>Details...</h2>
-        <h2>(primary key : {{ room.pk }})&nbsp;{{ room.name }}&nbsp;(${{ room.price }})</h2>
-        <h3>{{ room.description }}</h3>
-    </div>
-    <div><h2>
-        by :
-        {% if room.host.super_host %}
-            (Super Host)
-        {% endif %}
-        {{ room.host.username }}</h2>
-    </div>
-    <div>
-        <h2>Amenity</h2>
-        {% for amenity in room.amenities.all %}
-            <h4>{{ amenity }}</h4>
-        {% endfor %}
-    </div>
-    <div>
-        <h2>Facility</h2>
-        {% for facility in room.facilities.all %}
-            <h4>{{ facility }}</h4>
-        {% endfor %}
-    </div>
-    <div>
-        <h2>House Rule</h2>
-        {% for rule in room.house_rules.all %}
-            <h4>{{ rule }}</h4>
-        {% endfor %}
+
+    <div class="container max-w-full h-75vh mb-20 flex -mt-5 border border-gray-500">
+        <div class="h-full w-1/2 bg-cover bg-center border border-gray-500"
+             style="background-image: url('{{ room.first_photo }}')"></div>
+        <div class="h-full w-1/2 flex flex-wrap">
+            {% for next_photo in room.get_next_four_photos %}
+                <div class="bg-cover w-1/2 h-auto bg-center border border-gray-500"
+                     style="background-image: url('{{ next_photo.file.url }}')"></div>
+            {% endfor %}
+        </div>
     </div>
 
 {% endblock %}
