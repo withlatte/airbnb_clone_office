@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block page_title %}UPDATE ROOM{% endblock page_title %}
+{% block page_title %}UPDATE PHOTO{% endblock page_title %}
 {% block search-bar %}{% comment %}  Hide search-bar  {% endcomment %}{% endblock search-bar %}
 
 {% block content %}
@@ -7,10 +7,9 @@
 
         {% include 'mixins/room/room_form.html' with form=form cta="CLICK TO UPDATE" %}
 
-        <div class="mt-3 container flex w-full justify-between">
-            <a href="{% url "rooms:detail" room.pk %}" class="text-black font-semibold hover:underline">CANCEL</a>
-            <a href="{% url "rooms:photos" room.pk %}" class="text-teal-500 font-semibold hover:underline">사진
-                추가/변경/삭제</a>
+        <div class="mt-3 container flex w-full justify-center">
+            <a href="{% url 'rooms:photos' object.room.pk %}"
+               class="text-indigo-500 font-semibold hover:underline">돌아가기</a>
         </div>
     </div>
 {% endblock content %}
