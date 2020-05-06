@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block page_title %}UPDATE ROOM{% endblock page_title %}
+{% block search-bar %}{% comment %}  Hide search-bar  {% endcomment %}{% endblock search-bar %}
+
+{% block content %}
+    <div class="lg:w-5/12 md:w-1/2 xl:w-1/4 container mx-auto p-6 my-10 flex flex-col items-center border border-gray-400">
+
+        {% include 'mixins/room/room_form.html' with form=form cta="CLICK TO UPDATE" %}
+
+        <div class="mt-3 container flex w-full justify-between">
+            <a href="{% url "rooms:detail" room.pk %}" class="text-black font-semibold hover:underline">CANCEL</a>
+            {% if object.login_method == "email" %}
+                <a href="{% url "users:password" %}" class="text-teal-500 font-semibold hover:underline">CHANGE
+                    PASSWORD</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

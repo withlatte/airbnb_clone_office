@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView, View, UpdateView
 from django.core.paginator import Paginator
 from . import models as room_models
 from . import forms as search_forms
@@ -123,3 +123,30 @@ def all_rooms(request):
 
     return render(request, "rooms/room_list.html", context={"all_my_rooms": room,},)
 """
+
+
+class EditRoomView(UpdateView):
+    """ Edit Room View Definition """
+
+    model = room_models.Room
+    template_name = "rooms/room_edit.html"
+
+    fields = (
+        "name",
+        "description",
+        "country",
+        "city",
+        "address",
+        "price",
+        "guests",
+        "beds",
+        "bedrooms",
+        "baths",
+        "check_in",
+        "check_out",
+        "instant_book",
+        "room_type",
+        "amenities",
+        "facilities",
+        "house_rules",
+    )
