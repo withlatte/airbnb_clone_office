@@ -7,7 +7,7 @@
 
             {% include "mixins/user_avatar.html" with user=user_obj %}
             <div class="flex items-center">
-                <span class="text-3xl mt-1">{{ user_obj.first_name }}</span>
+                <span class="text-3xl mt-1">{{ user_obj.first_name }} {{ user_obj.last_name }}</span>
                 {% if user_obj.super_host %}
                     <i class="fas fa-check-circle text-teal-400 ml-2" title="SUPER HOST"></i> {% endif %}
             </div>

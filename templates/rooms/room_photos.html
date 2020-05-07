@@ -4,7 +4,8 @@
 
 {% block content %}
     <div class="container mx-auto my-10 flex flex-col">
-        <div>현재 {{ room.photos.count }}개의 사진이 있습니다.</div>
+        <a href="{% url 'rooms:add-photo' room.pk %}" class="btn-link mt-10 hover:bg-indigo-400">사 진 추 가 하 기</a>
+        <div class="mt-10">현재 {{ room.photos.count }}개의 사진이 있습니다.</div>
         {% for photo in room.photos.all %}
             <div class="mb-5 border p-6 border-gray-400 flex justify-between">
                 <div class="flex items-start">

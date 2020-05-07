@@ -33,3 +33,20 @@ class SearchForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         help_text="Select as many as you want.",
     )
+
+
+class CreatePhotoForm(forms.ModelForm):
+    """ Create Photo Form """
+
+    class Meta:
+        model = models.Photo
+        fields = (
+            "caption",
+            "file",
+        )
+
+    def save(self, pk, *args, **kwargs):
+        photo = super().save(commit=False)
+        room = models.Room.objects.get(pk=pk)
+        photo.room = room
+        photo.save()

@@ -4,11 +4,18 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.shortcuts import render, redirect, reverse
-from django.views.generic import ListView, DetailView, View, UpdateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    View,
+    UpdateView,
+    FormView,
+    DeleteView,
+)
 from django.core.paginator import Paginator
 from users import mixins as user_mixins
 from . import models as room_models
-from . import forms as search_forms
+from . import forms as forms
 
 
 class HomeView(ListView):
@@ -43,7 +50,7 @@ class SearchView(View):
         country = request.GET.get("country")
 
         if country:
-            form = search_forms.SearchForm(request.GET)
+            form = forms.SearchForm(request.GET)
 
             if form.is_valid():
                 city = form.cleaned_data.get("city")
@@ -105,7 +112,7 @@ class SearchView(View):
                     request, "rooms/search.html", {"form": form, "rooms": rooms},
                 )
         else:
-            form = search_forms.SearchForm()
+            form = forms.SearchForm()
 
         return render(request, "rooms/search.html", {"form": form},)
 
@@ -193,6 +200,18 @@ def delete_photo(request, room_pk, photo_pk):
         return redirect(reverse("core:home"))
 
 
+class DeletePhotoView(user_mixins.LoggedInOnlyView, DeleteView):
+    """ Delete Photo View Definition """
+
+    model = room_models.Photo
+    pk_url_kwarg = "photo_pk"
+
+    def get_success_url(self):
+        room_pk = self.kwargs.get("room_pk")
+        messages.success(self.request, "사진이 삭제되었습니다")
+        return reverse("rooms:photos", kwargs={"pk": room_pk})
+
+
 class EditPhotoView(user_mixins.LoggedInOnlyView, UpdateView):
     """ Edit Photo View """
 
@@ -205,3 +224,22 @@ class EditPhotoView(user_mixins.LoggedInOnlyView, UpdateView):
         room_pk = self.kwargs.get("room_pk")
         messages.success(self.request, "사진설명이 변경되었습니다")
         return reverse("rooms:photos", kwargs={"pk": room_pk})
+
+
+class AddPhotoView(user_mixins.LoggedInOnlyView, FormView):
+    """ Add Photo View Definition """
+
+    model = room_models.Photo
+    template_name = "rooms/photo_create.html"
+    form_class = forms.CreatePhotoForm
+
+    def form_valid(self, form):
+        pk = self.kwargs.get("pk")
+        form.save(pk)
+        messages.success(self.request, "Photo has been added successfully")
+        return redirect(reverse("rooms:photos", kwargs={"pk": pk}))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["room_pk"] = self.kwargs.get("pk")
+        return context
