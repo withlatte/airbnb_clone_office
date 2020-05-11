@@ -229,7 +229,6 @@ class EditPhotoView(user_mixins.LoggedInOnlyView, UpdateView):
 class AddPhotoView(user_mixins.LoggedInOnlyView, FormView):
     """ Add Photo View Definition """
 
-    model = room_models.Photo
     template_name = "rooms/photo_create.html"
     form_class = forms.CreatePhotoForm
 
@@ -243,3 +242,18 @@ class AddPhotoView(user_mixins.LoggedInOnlyView, FormView):
         context = super().get_context_data(**kwargs)
         context["room_pk"] = self.kwargs.get("pk")
         return context
+
+
+class CreateRoomView(user_mixins.LoggedInOnlyView, FormView):
+    """ Create Room View Definition """
+
+    form_class = forms.CreateRoomForm
+    template_name = "rooms/room_create.html"
+
+    def form_valid(self, form):
+        room = form.save()
+        room.host = self.request.user
+        room.save()
+        form.save_m2m()
+        messages.success(request=self.request, message="Room has been created")
+        return redirect(reverse("rooms:detail", kwargs={"pk": room.pk}))
